@@ -1,0 +1,44 @@
+from airflow import DAG
+from airflow.operators.bash import BashOperator
+from airflow.utils.dates import days_ago
+from datetime import timedelta
+
+# Définition du DAG
+default_args = {
+    'owner': 'data_engineer',
+    'retries': 1,
+    'retry_delay': timedelta(minutes=5),
+}
+
+with DAG(
+    dag_id='etl_meteo_elec',
+    default_args=default_args,
+    description='ETL météo + consommation électrique France',
+    schedule_interval='@daily',
+    start_date=days_ago(1),
+    catchup=False,
+    tags=['spark', 'databricks', 'bigquery'],
+) as dag:
+
+    extract_meteo = BashOperator(
+        task_id='extract_meteo',
+        bash_command='python3 /opt/airflow/scripts/api_request_meteo.py'
+    )
+
+    extract_rte = BashOperator(
+        task_id='extract_rte',
+        bash_command='python3 /opt/airflow/scripts/api_request_rte.py'
+    )
+
+    transform_spark = BashOperator(
+        task_id='transform_spark',
+        bash_command='python3 /opt/airflow/scripts/transform_pyspark.py'
+    )
+
+    load_bigquery = BashOperator(
+        task_id='load_bigquery',
+        bash_command='python3 /opt/airflow/scripts/load_bigquery.py'
+    )
+
+    # Définition de la séquence
+    extract_meteo >> extract_rte >> transform_spark >> load_bigquery

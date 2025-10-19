@@ -1,4 +1,13 @@
-RTE_API_URL = "https://opendata.reseaux-energies.fr/api/explore/v2.1/catalog/datasets/consommation-quotidienne-brute-regionale/records"
-METEO_API_URL = "https://api.openweathermap.org/data/2.5/weather"
-BQ_PROJECT = "etl-meteo-elec"
-BQ_DATASET = "etl_meteo_elec"
+# scripts/config.py
+
+# URLs des APIs
+URL_METEO = "https://api.meteo-concept.com/api/forecast/daily?insee=75056"
+URL_RTE = "https://opendata.reseaux-energies.fr/api/explore/v2.1/catalog/datasets/consommation-quotidienne-brute-regionale/records"
+
+# Configuration Spark / Databricks
+CATALOG = "main.etl_meteo_elec"
+
+# Google Cloud Storage
+GCP_BUCKET = "gs://mon-bucket-meteo-elec"
+GCP_PATH_METEO = f"{GCP_BUCKET}/meteo/"
+GCP_PATH_RTE = f"{GCP_BUCKET}/rte/"
